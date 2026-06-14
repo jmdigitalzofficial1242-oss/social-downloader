@@ -1,0 +1,61 @@
+[build]
+  command = "npm run netlify:prepare && npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  included_files = [
+    "netlify/functions/python/**",
+    "node_modules/@ffmpeg-installer/**"
+  ]
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/api/video-info"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from = "/api/download"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from = "/tiktok-video-downloader"
+  to = "/tiktok-video-downloader/"
+  status = 200
+
+[[redirects]]
+  from = "/instagram-reels-downloader"
+  to = "/instagram-reels-downloader/"
+  status = 200
+
+[[redirects]]
+  from = "/youtube-shorts-downloader"
+  to = "/youtube-shorts-downloader/"
+  status = 200
+
+[[redirects]]
+  from = "/facebook-video-downloader"
+  to = "/facebook-video-downloader/"
+  status = 200
+
+[[redirects]]
+  from = "/twitter-video-downloader"
+  to = "/twitter-video-downloader/"
+  status = 200
+
+[[redirects]]
+  from = "/pinterest-video-downloader"
+  to = "/pinterest-video-downloader/"
+  status = 200

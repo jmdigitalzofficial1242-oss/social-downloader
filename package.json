@@ -1,0 +1,21 @@
+{
+  "name": "social-downloader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node scripts/build-static.js",
+    "netlify:prepare": "node scripts/install-yt-dlp.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^26.1.0"
+  }
+}

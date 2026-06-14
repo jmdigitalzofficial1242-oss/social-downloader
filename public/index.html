@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-page-key="__PAGE_KEY__">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>__PAGE_TITLE__</title>
+    <meta name="description" content="__PAGE_DESCRIPTION__" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#101820" />
+    <link rel="canonical" href="__PAGE_CANONICAL__" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Social Downloader" />
+    <meta property="og:title" content="__PAGE_TITLE__" />
+    <meta property="og:description" content="__PAGE_DESCRIPTION__" />
+    <meta property="og:url" content="__PAGE_CANONICAL__" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="__PAGE_TITLE__" />
+    <meta name="twitter:description" content="__PAGE_DESCRIPTION__" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+      __APP_SCHEMA__
+    </script>
+    __API_BASE_SCRIPT__
+  </head>
+  <body>
+    <main class="app-shell">
+      <nav class="topbar" id="top" aria-label="Primary">
+        <a class="brand" href="/">
+          <span class="brand-mark">SD</span>
+          <span>Social Downloader</span>
+        </a>
+        <div class="nav-links" aria-label="Downloader pages">
+          <a href="/tiktok-video-downloader">TikTok</a>
+          <a href="/instagram-reels-downloader">Instagram</a>
+          <a href="/youtube-shorts-downloader">YouTube</a>
+          <a href="/facebook-video-downloader">Facebook</a>
+          <a href="/twitter-video-downloader">X</a>
+          <a href="/pinterest-video-downloader">Pinterest</a>
+        </div>
+      </nav>
+
+      <section class="hero" id="tool">
+        <div class="hero-copy">
+          <p class="eyebrow" id="page-eyebrow">Creator media workspace</p>
+          <h1 id="page-title">Download clean social media assets.</h1>
+          <p class="subtitle" id="page-subtitle">
+            Paste a public link, preview the media, inspect creator metadata, and save the best available video or thumbnail.
+          </p>
+        </div>
+
+        <form id="download-form" class="download-form glass-panel">
+          <label for="url-input">Media URL</label>
+          <div class="input-row">
+            <input
+              id="url-input"
+              name="url"
+              type="url"
+              placeholder="Paste TikTok, Instagram, YouTube, Facebook, X..."
+              autocomplete="off"
+              required
+            />
+            <button id="fetch-button" type="submit">
+              <span>Analyze</span>
+            </button>
+          </div>
+          <p id="status" class="status" role="status"></p>
+        </form>
+      </section>
+
+      <div id="loader" class="loader glass-panel" hidden>
+        <div class="loader-orb">
+          <div class="spinner" aria-hidden="true"></div>
+          <span id="loader-percent">0%</span>
+        </div>
+        <div class="loader-copy">
+          <p id="loader-title">Analyzing link...</p>
+          <span id="loader-detail">Preparing download options</span>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progress-bar"></span>
+          </div>
+          <div id="process-steps" class="process-steps" aria-label="Analyze process">
+            <span data-step="0">Validate link</span>
+            <span data-step="1">Detect platform</span>
+            <span data-step="2">Read metadata</span>
+            <span data-step="3">Prepare assets</span>
+          </div>
+        </div>
+      </div>
+
+      <section id="result" class="result command-center" hidden>
+        <div class="preview-console glass-panel">
+          <div class="preview-media">
+            <video id="smart-preview" controls playsinline preload="metadata" hidden></video>
+            <img id="thumbnail" alt="" />
+            <span id="platform-icon" class="platform-icon platform-generic" aria-hidden="true">SD</span>
+          </div>
+
+          <div class="preview-details">
+            <div id="result-badges" class="result-badges"></div>
+            <p class="eyebrow">Live link preview</p>
+            <h2 id="title"></h2>
+            <p id="count"></p>
+            <a id="source-link" class="source-link" href="#" target="_blank" rel="noreferrer">Open source</a>
+          </div>
+        </div>
+
+        <div class="primary-actions glass-panel" aria-label="Primary downloads">
+          <a id="high-download" class="primary-action action-high" href="#">
+            <span>High Quality</span>
+            <small id="high-meta">Best video</small>
+          </a>
+          <a id="normal-download" class="primary-action action-normal" href="#">
+            <span>Normal Quality</span>
+            <small id="normal-meta">Smaller video</small>
+          </a>
+          <a id="thumbnail-download" class="primary-action action-thumb" href="#">
+            <span>Thumbnail HD</span>
+            <small id="thumb-meta">Preview image</small>
+          </a>
+        </div>
+
+        <div id="creator-card" class="creator-card profile-panel glass-panel" hidden>
+          <div class="creator-avatar" id="creator-avatar">SD</div>
+          <div class="creator-main">
+            <p class="eyebrow">Creator profile</p>
+            <h2 id="creator-name"></h2>
+            <p id="creator-handle"></p>
+          </div>
+          <div id="creator-stats" class="creator-stats"></div>
+          <a id="creator-link" class="source-link" href="#" target="_blank" rel="noreferrer" hidden>View profile</a>
+        </div>
+
+        <details class="more-formats glass-panel">
+          <summary>
+            <span>More formats</span>
+            <small>Advanced video, audio, and image options</small>
+          </summary>
+          <div class="output-console">
+            <div id="output-summary" class="output-summary"></div>
+            <div class="output-tools" aria-label="Output filters">
+              <button class="filter-chip active" type="button" data-filter="all">All</button>
+              <button class="filter-chip" type="button" data-filter="video">Video</button>
+              <button class="filter-chip" type="button" data-filter="audio">Audio</button>
+              <button class="filter-chip" type="button" data-filter="image">Images</button>
+            </div>
+          </div>
+          <div id="options" class="options"></div>
+        </details>
+      </section>
+
+      <section class="supported glass-panel" id="platforms-section">
+        <div>
+          <p class="eyebrow">Keyword-focused tools</p>
+          <h2 id="supported-title">Social media video downloader</h2>
+          <p id="supported-copy">
+            Built for public media links from short-form platforms, social feeds, creator channels, and generic video pages.
+          </p>
+        </div>
+        <div id="platforms" class="platforms"></div>
+      </section>
+
+      <section class="seo-grid" id="features" aria-label="Downloader features">
+        <article class="seo-card">
+          <h2>HD video downloader</h2>
+          <p>Save available MP4/WebM files, audio-only assets, and preview thumbnails from public links.</p>
+        </article>
+        <article class="seo-card">
+          <h2>No-watermark options</h2>
+          <p>When a source exposes clean formats, the app prioritizes no-watermark options before backup formats.</p>
+        </article>
+        <article class="seo-card">
+          <h2>Creator metadata</h2>
+          <p>See public channel or profile details returned by the extractor without requiring login access.</p>
+        </article>
+      </section>
+
+      <section class="growth glass-panel" id="growth">
+        <div>
+          <p class="eyebrow">Rank and attract clients</p>
+          <h2>Built like a traffic tool, not only a downloader.</h2>
+          <p>
+            Use platform pages for search intent, keep one fast tool above the fold, and publish supporting guides around no-watermark, HD, thumbnail, and format keywords.
+          </p>
+        </div>
+        <div class="growth-list">
+          <span>Fast public tool experience</span>
+          <span>Platform-specific landing pages</span>
+          <span>FAQ schema-ready content</span>
+          <span>Client-friendly output cards</span>
+        </div>
+      </section>
+
+      <section class="faq glass-panel" id="faq">
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title">Video downloader questions</h2>
+        <details open>
+          <summary>Which links work best?</summary>
+          <p>Public video, reel, short, pin, and post links work best. Private, DRM, login-only, or region-blocked media may fail.</p>
+        </details>
+        <details>
+          <summary>Can it download thumbnails?</summary>
+          <p>Yes. If a public thumbnail is available, the app adds it as a separate ready asset.</p>
+        </details>
+        <details>
+          <summary>Does it scrape private profile data?</summary>
+          <p>No. It only shows public metadata returned by yt-dlp for the provided media URL.</p>
+        </details>
+      </section>
+
+      <nav class="bottom-app-nav" aria-label="App navigation">
+        <a href="#tool" class="active">
+          <span>Tool</span>
+        </a>
+        <a href="#platforms-section">
+          <span>Pages</span>
+        </a>
+        <a href="#features">
+          <span>Features</span>
+        </a>
+        <a href="#growth">
+          <span>Growth</span>
+        </a>
+        <a href="#faq">
+          <span>FAQ</span>
+        </a>
+      </nav>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

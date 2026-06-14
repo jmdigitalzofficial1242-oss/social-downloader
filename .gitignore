@@ -1,0 +1,7 @@
+node_modules/
+dist/
+netlify/functions/python/
+.env
+.netlify/
+.DS_Store
+Thumbs.db
