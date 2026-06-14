@@ -1,8 +1,21 @@
-import { execFile } from "node:child_process";
+import { execFile, execSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
+
+export let pythonCmd = "python";
+try {
+  execSync("python --version", { stdio: "ignore" });
+} catch {
+  try {
+    execSync("python3 --version", { stdio: "ignore" });
+    pythonCmd = "python3";
+  } catch {
+    // fallback
+  }
+}
+
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_OPTIONS_PER_ENTRY = 24;
 const BRAND_SUFFIX = "getintodevice.com";
@@ -442,7 +455,7 @@ const buildPrimaryActions = (downloads, { sourceUrl, title }) => {
 const runYtDlp = async (url) => {
   try {
     const { stdout } = await execFileAsync(
-      "python",
+      pythonCmd,
       ["-m", "yt_dlp", "--dump-single-json", "--skip-download", "--no-warnings", url],
       {
         encoding: "utf8",

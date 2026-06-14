@@ -6,7 +6,7 @@ import { extname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import ffmpeg from "@ffmpeg-installer/ffmpeg";
-import { fetchVideoDetails, getCachedDownload } from "../../services/videoService.js";
+import { fetchVideoDetails, getCachedDownload, pythonCmd } from "../../services/videoService.js";
 
 process.env.YTDLP_PYTHON_PATH ||= fileURLToPath(new URL("./python", import.meta.url));
 
@@ -102,7 +102,7 @@ const streamYtDlpDownload = async (cached, inline = false) => {
     outputTemplate,
     cached.sourceUrl
   ];
-  const child = spawn("python", args, {
+  const child = spawn(pythonCmd, args, {
     env: {
       ...process.env,
       PYTHONPATH: [process.env.YTDLP_PYTHON_PATH, process.env.PYTHONPATH].filter(Boolean).join(process.platform === "win32" ? ";" : ":")
