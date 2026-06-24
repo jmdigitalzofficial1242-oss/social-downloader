@@ -6,7 +6,10 @@ import { extname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import ffmpeg from "@ffmpeg-installer/ffmpeg";
-import { fetchVideoDetails, getCachedDownload, pythonCmd } from "../../services/videoService.js";
+import { fetchVideoDetails, getCachedDownload, pythonCmd, ytDlpArgs } from "../../services/videoService.js";
+import { chmodSync } from "node:fs";
+
+try { chmodSync(ffmpeg.path, 0o755); } catch {}
 
 process.env.YTDLP_PYTHON_PATH ||= fileURLToPath(new URL("./python", import.meta.url));
 
@@ -89,8 +92,7 @@ const streamYtDlpDownload = async (cached, inline = false) => {
   const tempDir = await mkdtemp(join(tmpdir(), "social-downloader-"));
   const outputTemplate = join(tempDir, "download.%(ext)s");
   const args = [
-    "-m",
-    "yt_dlp",
+    ...ytDlpArgs,
     "--no-warnings",
     "--ffmpeg-location",
     ffmpeg.path,
@@ -117,8 +119,12 @@ const streamYtDlpDownload = async (cached, inline = false) => {
     await new Promise((resolve, reject) => {
       child.on("error", reject);
       child.on("close", (code) => {
+        const logs = Buffer.concat(chunks).toString("utf8").trim();
+        if (logs.includes("WARNING:") || logs.includes("ERROR:")) {
+          console.error("yt-dlp logs:", logs);
+        }
         if (code === 0) resolve();
-        else reject(new Error(Buffer.concat(chunks).toString("utf8").trim() || "yt-dlp download failed."));
+        else reject(new Error(logs || "yt-dlp download failed."));
       });
     });
 
@@ -132,7 +138,9 @@ const streamYtDlpDownload = async (cached, inline = false) => {
           return fileStat.isFile() ? { path, fileStat } : null;
         })
     );
-    const output = completedFiles.filter(Boolean).sort((a, b) => b.fileStat.size - a.fileStat.size)[0];
+    const targetFile = join(tempDir, `download.${cached.ext || "mp4"}`);
+    const output = completedFiles.filter(Boolean).find((f) => f.path === targetFile) || 
+                   completedFiles.filter(Boolean).sort((a, b) => b.fileStat.size - a.fileStat.size)[0];
     if (!output) throw new Error("yt-dlp did not produce a downloadable file.");
 
     const actualExtension = extname(output.path).slice(1) || cached.ext;

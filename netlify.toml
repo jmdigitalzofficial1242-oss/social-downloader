@@ -6,6 +6,7 @@
   directory = "netlify/functions"
   included_files = [
     "netlify/functions/python/**",
+    "netlify/functions/bin/**",
     "node_modules/@ffmpeg-installer/**"
   ]
 

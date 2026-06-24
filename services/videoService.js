@@ -4,15 +4,36 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 
+import { join } from "node:path";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 export let pythonCmd = "python";
-try {
-  execSync("python --version", { stdio: "ignore" });
-} catch {
+export let ytDlpArgs = ["-m", "yt_dlp"];
+
+const currentDir = fileURLToPath(new URL(".", import.meta.url));
+const binName = process.platform === "win32" ? "yt-dlp.exe" : "yt-dlp";
+const binPaths = [
+  join(currentDir, "..", "netlify", "functions", "bin", binName),
+  join(process.cwd(), "netlify", "functions", "bin", binName),
+  join(process.cwd(), "bin", binName),
+  join(currentDir, "bin", binName)
+];
+
+const binPath = binPaths.find(p => existsSync(p));
+if (binPath) {
+  pythonCmd = binPath;
+  ytDlpArgs = [];
+} else {
   try {
-    execSync("python3 --version", { stdio: "ignore" });
-    pythonCmd = "python3";
+    execSync("python --version", { stdio: "ignore" });
   } catch {
-    // fallback
+    try {
+      execSync("python3 --version", { stdio: "ignore" });
+      pythonCmd = "python3";
+    } catch {
+      // fallback
+    }
   }
 }
 
@@ -276,7 +297,7 @@ const cacheDownload = ({ format, entry = {}, title, entryIndex = 0 }) => {
     sourceUrl,
     formatId: format.format_id,
     formatSelector: shouldMergeAudio
-      ? `${format.format_id}+${mergeAudioSelector}/${format.format_id}+bestaudio/${format.format_id}`
+      ? mergeAudioSelector.split('/').map(a => `${format.format_id}+${a}`).join('/') + `/${format.format_id}+bestaudio/${format.format_id}`
       : "",
     headers: getHeaders(format, entry),
     filename,
@@ -456,7 +477,7 @@ const runYtDlp = async (url) => {
   try {
     const { stdout } = await execFileAsync(
       pythonCmd,
-      ["-m", "yt_dlp", "--dump-single-json", "--skip-download", "--no-warnings", url],
+      [...ytDlpArgs, "--dump-single-json", "--skip-download", "--no-warnings", url],
       {
         encoding: "utf8",
         env: {

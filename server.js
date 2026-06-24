@@ -6,7 +6,10 @@ import { extname, join, normalize } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import ffmpeg from "@ffmpeg-installer/ffmpeg";
-import { fetchVideoDetails, getCachedDownload, pythonCmd } from "./services/videoService.js";
+import { fetchVideoDetails, getCachedDownload, pythonCmd, ytDlpArgs } from "./services/videoService.js";
+import { chmodSync } from "node:fs";
+
+try { chmodSync(ffmpeg.path, 0o755); } catch {}
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const publicDir = join(__dirname, "public");
@@ -79,10 +82,17 @@ const mimeTypes = {
   ".ico": "image/x-icon"
 };
 
+const corsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
+  "access-control-allow-headers": "content-type"
+};
+
 const sendJson = (res, statusCode, body) => {
   res.writeHead(statusCode, {
     "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store"
+    "cache-control": "no-store",
+    ...corsHeaders
   });
   res.end(JSON.stringify(body));
 };
@@ -346,7 +356,8 @@ const handleDownloadProxy = async (req, res) => {
   res.writeHead(200, {
     "content-type": contentType,
     "content-disposition": isPreview ? inlineDisposition(finalName) : contentDisposition(finalName),
-    "cache-control": "no-store"
+    "cache-control": "no-store",
+    ...corsHeaders
   });
 
   try {
@@ -366,8 +377,7 @@ const streamYtDlpDownload = async (cached, res, options = {}) => {
   const tempDir = await mkdtemp(join(tmpdir(), "social-downloader-"));
   const outputTemplate = join(tempDir, "download.%(ext)s");
   const args = [
-    "-m",
-    "yt_dlp",
+    ...ytDlpArgs,
     "--no-warnings",
     "--ffmpeg-location",
     ffmpeg.path,
@@ -402,11 +412,12 @@ const streamYtDlpDownload = async (cached, res, options = {}) => {
       child.on("error", reject);
       child.on("close", (code) => {
         res.off("close", killChild);
-        if (code === 0) {
-          resolve();
-          return;
+        const logs = Buffer.concat(chunks).toString("utf8").trim();
+        if (logs.includes("WARNING:") || logs.includes("ERROR:")) {
+          console.error("yt-dlp logs:", logs);
         }
-        reject(new Error(Buffer.concat(chunks).toString("utf8").trim() || "yt-dlp download failed."));
+        if (code === 0) resolve();
+        else reject(new Error(logs || "yt-dlp download failed."));
       });
     });
 
@@ -420,14 +431,17 @@ const streamYtDlpDownload = async (cached, res, options = {}) => {
           return fileStat.isFile() ? { path, fileStat } : null;
         })
     );
-    const output = completedFiles.filter(Boolean).sort((a, b) => b.fileStat.size - a.fileStat.size)[0];
+    const targetFile = join(tempDir, `download.${cached.ext || "mp4"}`);
+    const output = completedFiles.filter(Boolean).find((f) => f.path === targetFile) || 
+                   completedFiles.filter(Boolean).sort((a, b) => b.fileStat.size - a.fileStat.size)[0];
     if (!output) throw new Error("yt-dlp did not produce a downloadable file.");
     const actualExtension = extname(output.path).slice(1) || cached.ext;
     res.writeHead(200, {
       "content-type": contentTypeFromExtension(actualExtension),
       "content-disposition": options.inline ? inlineDisposition(cached.filename) : contentDisposition(cached.filename),
       "content-length": output.fileStat.size,
-      "cache-control": "no-store"
+      "cache-control": "no-store",
+      ...corsHeaders
     });
 
     await new Promise((resolve, reject) => {
@@ -520,6 +534,12 @@ const serveStatic = async (req, res) => {
 
 const server = createServer(async (req, res) => {
   try {
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, corsHeaders);
+      res.end();
+      return;
+    }
+
     if (req.method === "POST" && req.url === "/api/video-info") {
       const body = await readJsonBody(req);
       const info = await fetchVideoDetails(body.url);

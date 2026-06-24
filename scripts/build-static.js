@@ -7,6 +7,7 @@ const rootDir = join(__dirname, "..");
 const publicDir = join(rootDir, "public");
 const distDir = join(rootDir, "dist");
 const siteUrl = (process.env.SITE_URL || "https://getintodevice.netlify.app").replace(/\/+$/, "");
+const publicApiBase = (process.env.PUBLIC_API_BASE || "").replace(/\/+$/, "");
 
 const seoPages = {
   "/": {
@@ -102,7 +103,12 @@ const renderPage = (template, page) =>
     .replaceAll("__PAGE_CANONICAL__", escapeHtml(absoluteUrl(page.canonical)))
     .replaceAll("__PAGE_KEY__", escapeHtml(page.pageKey))
     .replaceAll("__APP_SCHEMA__", JSON.stringify(buildSchema(page)).replace(/</g, "\\u003c"))
-    .replaceAll("__API_BASE_SCRIPT__", "");
+    .replaceAll(
+      "__API_BASE_SCRIPT__",
+      publicApiBase
+        ? `<script>window.SOCIAL_DOWNLOADER_API_BASE=${JSON.stringify(publicApiBase).replace(/</g, "\\u003c")};</script>`
+        : ""
+    );
 
 await rm(distDir, { recursive: true, force: true });
 await mkdir(distDir, { recursive: true });

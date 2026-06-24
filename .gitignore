@@ -5,3 +5,24 @@ netlify/functions/python/
 .netlify/
 .DS_Store
 Thumbs.db
+
+# Shogo — IDE-mode local state (safe to ignore)
+.shogo/
+memory/
+
+# Standalone binaries
+netlify/functions/bin/
+bin/
+
+# Temporary video and download test files
+*.part
+*.m4a
+*.mp4
+*.webm
+*.aac
+*.mp3
+config.json
+test_merge.js
+test_output.f140.m4a
+test_download.f137.mp4.part
+

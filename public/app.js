@@ -69,7 +69,13 @@ const pageContent = {
     subtitle: "Paste a public link, preview the media, inspect creator metadata, and save the best available video or thumbnail.",
     supportedTitle: "Social media video downloader",
     supportedCopy: "One focused workspace for TikTok, Instagram Reels, YouTube Shorts, Facebook, X, Pinterest, and generic video links.",
-    placeholder: "Paste TikTok, Instagram, YouTube, Facebook, X..."
+    placeholder: "Paste TikTok, Instagram, YouTube, Facebook, X...",
+    howToUseTitle: "How to use Social Downloader",
+    steps: [
+      { title: "Copy public link", desc: "Find the public shareable video link on platforms like TikTok, Instagram, YouTube, or Pinterest.", icon: "content_copy" },
+      { title: "Paste & analyze link", desc: "Paste the social media link in the input box above and click the Analyze button to parse creator assets.", icon: "link" },
+      { title: "Free HD download", desc: "Select your preferred format (HD Video, Audio, or Thumbnails) and download instantly.", icon: "download_for_offline" }
+    ]
   },
   tiktok: {
     eyebrow: "TikTok video downloader",
@@ -77,7 +83,13 @@ const pageContent = {
     subtitle: "Analyze public TikTok links, find no-watermark options when available, and save HD video or thumbnails.",
     supportedTitle: "TikTok video downloader no watermark",
     supportedCopy: "Built around high-intent TikTok keywords: no watermark, MP4, HD video, thumbnails, and creator metadata.",
-    placeholder: "Paste a TikTok video URL..."
+    placeholder: "Paste a TikTok video URL...",
+    howToUseTitle: "How to download TikTok videos",
+    steps: [
+      { title: "Copy TikTok video link", desc: "Open the TikTok app, locate the video or slideshow you want, and copy its public share link.", icon: "content_copy" },
+      { title: "Use TikTok link analyzer", desc: "Paste the copied TikTok video link into our analyzer field above to extract raw source formats.", icon: "link" },
+      { title: "Download TikTok no watermark", desc: "Click the download button next to the high quality MP4 to save the clean video without watermark logo.", icon: "download_for_offline" }
+    ]
   },
   instagram: {
     eyebrow: "Instagram Reels downloader",
@@ -85,7 +97,13 @@ const pageContent = {
     subtitle: "Paste a public Reel or post link to preview media, profile details, and clean download options.",
     supportedTitle: "Instagram reels downloader",
     supportedCopy: "Targeted for reels, Instagram video downloader, HD MP4 downloads, and public creator previews.",
-    placeholder: "Paste an Instagram Reel URL..."
+    placeholder: "Paste an Instagram Reel URL...",
+    howToUseTitle: "How to download Instagram Reels",
+    steps: [
+      { title: "Copy Instagram Reels link", desc: "Go to Instagram, tap the share sheet on any Reel, post, or video, and copy the public URL.", icon: "content_copy" },
+      { title: "Run Reels video extractor", desc: "Paste the link into the extractor input above to gather high-resolution assets and creator profiles.", icon: "link" },
+      { title: "Download HD Reels MP4", desc: "Choose the best quality download format to save the video file directly to your local device.", icon: "download_for_offline" }
+    ]
   },
   youtube: {
     eyebrow: "YouTube Shorts downloader",
@@ -93,7 +111,13 @@ const pageContent = {
     subtitle: "Analyze Shorts links, view channel metadata, and save available video or thumbnail assets.",
     supportedTitle: "YouTube shorts downloader",
     supportedCopy: "Supports YouTube Shorts downloader, HD video downloader, MP4 downloads, and thumbnail downloads.",
-    placeholder: "Paste a YouTube Shorts URL..."
+    placeholder: "Paste a YouTube Shorts URL...",
+    howToUseTitle: "How to download YouTube Shorts",
+    steps: [
+      { title: "Copy YouTube Shorts URL", desc: "Open the YouTube app or website, find the Shorts video or standard clip, and copy its public URL.", icon: "content_copy" },
+      { title: "Process Shorts link analyzer", desc: "Paste the link into the parser box above to resolve HD resolutions, formats, and audio tracks.", icon: "link" },
+      { title: "Save HD YouTube video", desc: "Download the video as a high-quality MP4 file or save the audio track as a clear MP3.", icon: "download_for_offline" }
+    ]
   },
   facebook: {
     eyebrow: "Facebook video downloader",
@@ -101,7 +125,13 @@ const pageContent = {
     subtitle: "Analyze public Facebook media links and download available MP4 assets with metadata.",
     supportedTitle: "Facebook video downloader",
     supportedCopy: "Focused on public Facebook video download, HD MP4 assets, thumbnails, and source previews.",
-    placeholder: "Paste a Facebook video URL..."
+    placeholder: "Paste a Facebook video URL...",
+    howToUseTitle: "How to download Facebook videos",
+    steps: [
+      { title: "Copy Facebook video link", desc: "Navigate to the public Facebook video, click the share menu, and select copy link.", icon: "content_copy" },
+      { title: "Use Facebook media parser", desc: "Paste the video link into the analyzer to parse the SD/HD stream locations and thumbnails.", icon: "link" },
+      { title: "Download Facebook videos", desc: "Press the high-quality download button to save the MP4 video file straight to your folder.", icon: "download_for_offline" }
+    ]
   },
   twitter: {
     eyebrow: "Twitter X video downloader",
@@ -109,7 +139,13 @@ const pageContent = {
     subtitle: "Paste a public post link to extract available video formats, thumbnails, and creator metadata.",
     supportedTitle: "Twitter X video downloader",
     supportedCopy: "Built for X video downloader, Twitter video download, MP4 assets, and public post previews.",
-    placeholder: "Paste an X or Twitter video URL..."
+    placeholder: "Paste an X or Twitter video URL...",
+    howToUseTitle: "How to download X / Twitter videos",
+    steps: [
+      { title: "Copy X video post link", desc: "Click the share icon on the tweet containing the video or GIF and copy the link.", icon: "content_copy" },
+      { title: "Run X / Twitter media fetcher", desc: "Paste the tweet link into the analyzer to search for available MP4 file resolutions.", icon: "link" },
+      { title: "Save HD X video asset", desc: "Select the desired resolution size and download the clean video file to your system.", icon: "download_for_offline" }
+    ]
   },
   pinterest: {
     eyebrow: "Pinterest video downloader",
@@ -117,7 +153,13 @@ const pageContent = {
     subtitle: "Analyze public pins, preview media, and download available video or thumbnail assets.",
     supportedTitle: "Pinterest video downloader",
     supportedCopy: "Targets Pinterest video download, pin thumbnail download, HD media, and public creator data.",
-    placeholder: "Paste a Pinterest video URL..."
+    placeholder: "Paste a Pinterest video URL...",
+    howToUseTitle: "How to download Pinterest videos",
+    steps: [
+      { title: "Copy Pinterest Pin link", desc: "Open the Pin you wish to save, click share, and copy the link of the video pin.", icon: "content_copy" },
+      { title: "Open Pinterest Pin inspector", desc: "Paste the copied URL in the input above to decode the direct media streams and images.", icon: "link" },
+      { title: "Save HD Pin downloader", desc: "Select the high-quality MP4 file or choose the HD thumbnail image to download locally.", icon: "download_for_offline" }
+    ]
   }
 };
 
@@ -151,6 +193,22 @@ const applyPageContent = () => {
     link.classList.toggle("active", active);
     if (active) link.setAttribute("aria-current", "page");
   });
+
+  // Dynamic tutorial steps updates
+  if (content.howToUseTitle) {
+    document.querySelector("#how-to-use-title").textContent = content.howToUseTitle;
+  }
+  if (content.steps && content.steps.length === 3) {
+    content.steps.forEach((step, i) => {
+      const index = i + 1;
+      const titleEl = document.querySelector(`#step-${index}-title`);
+      const descEl = document.querySelector(`#step-${index}-desc`);
+      const iconEl = document.querySelector(`#step-${index}-icon`);
+      if (titleEl) titleEl.textContent = step.title;
+      if (descEl) descEl.textContent = step.desc;
+      if (iconEl) iconEl.textContent = step.icon;
+    });
+  }
 };
 
 const setStatus = (message, isError = false) => {
@@ -500,3 +558,37 @@ platforms.replaceChildren(
     return chip;
   })
 );
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("a.primary-action, a.download-link");
+  if (!target || !target.href || target.href.endsWith("#") || target.target === "_blank") return;
+  if (target.dataset.downloading) {
+    event.preventDefault();
+    return;
+  }
+  
+  target.dataset.downloading = "true";
+  const originalHtml = target.innerHTML;
+  if (target.classList.contains("primary-action")) {
+    const span = target.querySelector("span");
+    if (span) span.textContent = "Processing...";
+  } else {
+    target.textContent = "Processing...";
+  }
+  target.style.opacity = "0.7";
+  target.style.pointerEvents = "none";
+  setStatus("Preparing your download... This may take a minute.");
+  
+  const revert = () => {
+    target.innerHTML = originalHtml;
+    target.style.opacity = "";
+    target.style.pointerEvents = "";
+    delete target.dataset.downloading;
+    setStatus("Download started.");
+    setTimeout(() => setStatus(""), 3000);
+    window.removeEventListener("blur", revert);
+  };
+  
+  window.addEventListener("blur", revert);
+  setTimeout(revert, 45000);
+});
