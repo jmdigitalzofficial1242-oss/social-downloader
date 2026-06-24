@@ -5,13 +5,15 @@ import { Readable } from "node:stream";
 import { extname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import ffmpeg from "@ffmpeg-installer/ffmpeg";
 import { fetchVideoDetails, getCachedDownload, pythonCmd, ytDlpArgs } from "../../services/videoService.js";
+import { resolveBundledFfmpegPath } from "../../services/bundledFfmpegPath.js";
 import { chmodSync } from "node:fs";
 
-try { chmodSync(ffmpeg.path, 0o755); } catch {}
+const ffmpegPath = resolveBundledFfmpegPath();
+try { chmodSync(ffmpegPath, 0o755); } catch {}
 
-process.env.YTDLP_PYTHON_PATH ||= fileURLToPath(new URL("./python", import.meta.url));
+const functionDir = fileURLToPath(new URL(".", import.meta.url));
+process.env.YTDLP_PYTHON_PATH ||= join(functionDir, "python");
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -95,7 +97,7 @@ const streamYtDlpDownload = async (cached, inline = false) => {
     ...ytDlpArgs,
     "--no-warnings",
     "--ffmpeg-location",
-    ffmpeg.path,
+    ffmpegPath,
     "--merge-output-format",
     cached.ext || "mp4",
     "-f",

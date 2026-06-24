@@ -5,11 +5,12 @@ import { createReadStream } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import ffmpeg from "@ffmpeg-installer/ffmpeg";
 import { fetchVideoDetails, getCachedDownload, pythonCmd, ytDlpArgs } from "./services/videoService.js";
+import { resolveLocalFfmpegPath } from "./services/localFfmpegPath.js";
 import { chmodSync } from "node:fs";
 
-try { chmodSync(ffmpeg.path, 0o755); } catch {}
+const ffmpegPath = resolveLocalFfmpegPath();
+try { chmodSync(ffmpegPath, 0o755); } catch {}
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const publicDir = join(__dirname, "public");
@@ -380,7 +381,7 @@ const streamYtDlpDownload = async (cached, res, options = {}) => {
     ...ytDlpArgs,
     "--no-warnings",
     "--ffmpeg-location",
-    ffmpeg.path,
+    ffmpegPath,
     "--merge-output-format",
     cached.ext || "mp4",
     "-f",

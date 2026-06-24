@@ -1,15 +1,18 @@
-import { createWriteStream, existsSync } from "node:fs";
+import { createWriteStream, existsSync, unlink } from "node:fs";
 import { chmod, mkdir } from "node:fs/promises";
 import https from "node:https";
 import path from "node:path";
-import os from "node:os";
 
-const isWin = process.platform === "win32";
+const targetPlatform = String(process.env.YTDLP_TARGET_PLATFORM || process.platform).toLowerCase();
+const isWin = targetPlatform === "win32" || targetPlatform === "windows";
 const binaryName = isWin ? "yt-dlp.exe" : "yt-dlp";
-const downloadUrl = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/${isWin ? 'yt-dlp.exe' : 'yt-dlp_linux'}`;
+const staleBinaryName = isWin ? "yt-dlp" : "yt-dlp.exe";
+const releaseAsset = isWin ? "yt-dlp.exe" : "yt-dlp_linux";
+const downloadUrl = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/${releaseAsset}`;
 
 const dir = path.join(process.cwd(), "netlify", "functions", "bin");
 const destPath = path.join(dir, binaryName);
+const stalePath = path.join(dir, staleBinaryName);
 
 console.log(`Downloading ${downloadUrl} to ${destPath}`);
 
@@ -25,7 +28,7 @@ const download = (url, dest) => {
           file.close(resolve);
         });
         file.on("error", (err) => {
-          fs.unlink(dest, () => reject(err));
+          unlink(dest, () => reject(err));
         });
       } else {
         reject(new Error(`Failed to download: ${res.statusCode}`));
@@ -38,6 +41,9 @@ const download = (url, dest) => {
   try {
     if (!existsSync(dir)) {
       await mkdir(dir, { recursive: true });
+    }
+    if (existsSync(stalePath)) {
+      unlink(stalePath, () => {});
     }
     await download(downloadUrl, destPath);
     if (!isWin) {

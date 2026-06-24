@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "node server.js",
     "build": "node scripts/build-static.js",
-    "netlify:prepare": "node scripts/install-yt-dlp.js"
+    "netlify:prepare": "node scripts/install-yt-dlp.js",
+    "netlify:prepare:linux": "node scripts/prepare-linux.js"
   },
   "engines": {
     "node": ">=18"

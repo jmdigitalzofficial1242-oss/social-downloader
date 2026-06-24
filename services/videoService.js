@@ -446,6 +446,12 @@ const buildPrimaryActions = (downloads, { sourceUrl, title }) => {
   const videos = downloads.filter((item) => item.type === "video");
   const completeVideos = videos.filter((item) => item.has_audio !== false);
   const images = downloads.filter((item) => item.type === "image");
+  const preferPlayableVideo = (items) =>
+    items.find((item) => item.extension === "mp4" && item.has_audio !== false) ||
+    items.find((item) => item.extension === "mp4") ||
+    items.find((item) => item.has_audio !== false) ||
+    items[0] ||
+    null;
   const maxResolutionSide = (item) => {
     const values = String(item?.resolution || "")
       .match(/\d+/g)
@@ -455,13 +461,25 @@ const buildPrimaryActions = (downloads, { sourceUrl, title }) => {
   };
   const mergedHigh = sourceUrl ? cacheMergedDownload({ sourceUrl, title, quality: "high" }) : null;
   const mergedNormal = sourceUrl ? cacheMergedDownload({ sourceUrl, title, quality: "normal" }) : null;
-  const highQuality = mergedHigh || completeVideos[0] || videos[0] || downloads.find((item) => item.type !== "audio") || downloads[0] || null;
-  const normalQuality =
-    mergedNormal ||
-    completeVideos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4") ||
+  const directHigh =
+    preferPlayableVideo(completeVideos.filter((item) => item.extension === "mp4")) ||
+    preferPlayableVideo(completeVideos);
+  const highQuality =
+    directHigh ||
+    mergedHigh ||
+    preferPlayableVideo(videos.filter((item) => item.extension === "mp4")) ||
+    preferPlayableVideo(videos) ||
+    downloads.find((item) => item.type !== "audio") ||
+    downloads[0] ||
+    null;
+  const directNormal =
+    preferPlayableVideo(completeVideos.filter((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4")) ||
     completeVideos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720) ||
-    completeVideos.find((item) => item !== highQuality && /360|480|540|normal|medium/i.test([item.label, item.resolution].join(" "))) ||
-    videos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4") ||
+    completeVideos.find((item) => item !== highQuality && /360|480|540|normal|medium/i.test([item.label, item.resolution].join(" ")));
+  const normalQuality =
+    directNormal ||
+    mergedNormal ||
+    preferPlayableVideo(videos.filter((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4")) ||
     videos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720) ||
     highQuality;
   const thumbnailHd = images.find((item) => /thumbnail|preview/i.test([item.label, item.badge].join(" "))) || images[0] || null;

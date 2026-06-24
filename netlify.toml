@@ -1,13 +1,12 @@
 [build]
-  command = "npm run netlify:prepare && npm run build"
+  command = "npm run netlify:prepare:linux && npm run build"
   publish = "dist"
 
 [functions]
   directory = "netlify/functions"
   included_files = [
     "netlify/functions/python/**",
-    "netlify/functions/bin/**",
-    "node_modules/@ffmpeg-installer/**"
+    "netlify/functions/bin/**"
   ]
 
 [[headers]]
