@@ -443,15 +443,10 @@ const collectFormats = (entry) => {
 };
 
 const buildPrimaryActions = (downloads, { sourceUrl, title }) => {
+  const isNetlifyRuntime = Boolean(process.env.NETLIFY);
   const videos = downloads.filter((item) => item.type === "video");
   const completeVideos = videos.filter((item) => item.has_audio !== false);
   const images = downloads.filter((item) => item.type === "image");
-  const preferPlayableVideo = (items) =>
-    items.find((item) => item.extension === "mp4" && item.has_audio !== false) ||
-    items.find((item) => item.extension === "mp4") ||
-    items.find((item) => item.has_audio !== false) ||
-    items[0] ||
-    null;
   const maxResolutionSide = (item) => {
     const values = String(item?.resolution || "")
       .match(/\d+/g)
@@ -459,28 +454,43 @@ const buildPrimaryActions = (downloads, { sourceUrl, title }) => {
       .filter(Number.isFinite);
     return values?.length ? Math.max(...values) : Number.POSITIVE_INFINITY;
   };
+  const pickPlayableVideo = (items, { mp4Only = false, maxHeight = Number.POSITIVE_INFINITY } = {}) => {
+    const candidates = items.filter((item) => {
+      if (item.has_audio === false) return false;
+      if (mp4Only && item.extension !== "mp4") return false;
+      return maxResolutionSide(item) <= maxHeight;
+    });
+    return candidates.sort((a, b) => {
+      const heightDiff = maxResolutionSide(b) - maxResolutionSide(a);
+      if (heightDiff !== 0) return heightDiff;
+      if (a.extension !== b.extension) return a.extension === "mp4" ? -1 : 1;
+      return Number(b.size || 0) - Number(a.size || 0);
+    })[0] || null;
+  };
   const mergedHigh = sourceUrl ? cacheMergedDownload({ sourceUrl, title, quality: "high" }) : null;
   const mergedNormal = sourceUrl ? cacheMergedDownload({ sourceUrl, title, quality: "normal" }) : null;
   const directHigh =
-    preferPlayableVideo(completeVideos.filter((item) => item.extension === "mp4")) ||
-    preferPlayableVideo(completeVideos);
+    pickPlayableVideo(completeVideos, { mp4Only: true, maxHeight: isNetlifyRuntime ? 1080 : Number.POSITIVE_INFINITY }) ||
+    pickPlayableVideo(completeVideos, { mp4Only: true }) ||
+    pickPlayableVideo(completeVideos);
   const highQuality =
     directHigh ||
     mergedHigh ||
-    preferPlayableVideo(videos.filter((item) => item.extension === "mp4")) ||
-    preferPlayableVideo(videos) ||
+    pickPlayableVideo(videos, { mp4Only: true, maxHeight: isNetlifyRuntime ? 1080 : Number.POSITIVE_INFINITY }) ||
+    pickPlayableVideo(videos, { mp4Only: true }) ||
+    pickPlayableVideo(videos) ||
     downloads.find((item) => item.type !== "audio") ||
     downloads[0] ||
     null;
   const directNormal =
-    preferPlayableVideo(completeVideos.filter((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4")) ||
+    pickPlayableVideo(completeVideos.filter((item) => item !== highQuality), { mp4Only: true, maxHeight: isNetlifyRuntime ? 720 : 720 }) ||
     completeVideos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720) ||
     completeVideos.find((item) => item !== highQuality && /360|480|540|normal|medium/i.test([item.label, item.resolution].join(" ")));
   const normalQuality =
     directNormal ||
     mergedNormal ||
-    preferPlayableVideo(videos.filter((item) => item !== highQuality && maxResolutionSide(item) <= 720 && item.extension === "mp4")) ||
-    videos.find((item) => item !== highQuality && maxResolutionSide(item) <= 720) ||
+    pickPlayableVideo(videos.filter((item) => item !== highQuality), { mp4Only: true, maxHeight: 720 }) ||
+    pickPlayableVideo(videos.filter((item) => item !== highQuality), { maxHeight: 720 }) ||
     highQuality;
   const thumbnailHd = images.find((item) => /thumbnail|preview/i.test([item.label, item.badge].join(" "))) || images[0] || null;
 
